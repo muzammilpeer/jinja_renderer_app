@@ -3,8 +3,6 @@ jinja_renderer_app
 
 docker build -t muzammilpeer/jinja-render-app:latest .
 docker push muzammilpeer/jinja-render-app:latest
-
-
 kubectl apply -f frontend-deployment.yaml
 
 

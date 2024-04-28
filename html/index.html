@@ -15,43 +15,53 @@
 
 <body>
     <div class="container mt-5">
-        <h2>Jinja Template Renderer</h2>
-        <form id="renderForm">
-            <div class="form-group">
-                <label for="jinjaMessage">Jinja Message:</label>
-                <input type="text" class="form-control" id="jinjaMessage" placeholder="Enter Jinja message">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Jinja Template Renderer</h2>
+                <form id="renderForm">
+                    <div class="form-group">
+                        <label for="jinjaMessage">Jinja Message:</label>
+                        <textarea class="form-control" id="jinjaMessage" rows="5"
+                            placeholder="Enter Jinja message"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="contextData">Context Data (JSON):</label>
+                        <textarea class="form-control" id="contextData" rows="5"
+                            placeholder='{"key": "value"}'></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Render Message</button>
+                </form>
+                <h3 class="mt-4">Rendered Result:</h3>
+                <div id="result" class="alert alert-success" role="alert" style="display: none;"></div>
             </div>
-            <div class="form-group">
-                <label for="contextData">Context Data (JSON):</label>
-                <textarea class="form-control" id="contextData" rows="3" placeholder='{"key": "value"}'></textarea>
+            <div class="col-md-6">
+                <h3>Sample Jinja Message:</h3>
+                <textarea id="sampleJinjaMessage" class="form-control" onclick="copyToClipboard('#sampleJinjaMessage')"
+                    readonly rows="5">{% if Policy.customer.language == 'ar' %}
+                    شكراً لاختيارك سايكو للتأمين، يرجى تحميل وثيقة تأمينك من الرابط التالي
+                    {{site_url}}/api/v3/policy/{{Policy.policy_number|urlencode|replace('/','%2F')}}/coi/?last_name={{Hashed_last_name}}
+                    #تأمين الأجيال
+                    {% else %}
+                    Thank you for choosing SAICO Insurance, please click the link to download your policy.
+                    {{site_url}}/api/v3/policy/{{Policy.policy_number|urlencode|replace('/','%2F')}}/coi/?last_name={{Hashed_last_name}}
+                    #InsuringGenerations
+                    {% endif %}</textarea>
+                <button onclick="copyToClipboard('#sampleJinjaMessage')" class="btn btn-secondary mt-2">Copy Jinja
+                    Message</button>
+                <h3 class="mt-4">Sample Context Data:</h3>
+                <textarea id="sampleContextData" class="form-control" onclick="copyToClipboard('#sampleContextData')"
+                    readonly rows="5">{
+    "Policy": {
+        "customer": {"language": "en"},
+        "policy_number": "POLICY/1234"
+    },
+    "site_url": "https://saicoinsurance.com",
+    "Hashed_last_name": "hashedvalue"
+} </textarea>
+                <button onclick="copyToClipboard('#sampleContextData')" class="btn btn-secondary mt-2">Copy Context
+                    Data</button>
             </div>
-            <button type="submit" class="btn btn-primary">Render Message</button>
-        </form>
-
-        <h3 class="mt-4">Sample Jinja Message:</h3>
-        <textarea id="sampleJinjaMessage" class="form-control" onclick="copyToClipboard('#sampleJinjaMessage')"
-            readonly>
-            {% if Policy.customer.language == 'ar' %} شكراً لاختيارك سايكو للتأمين، يرجى تحميل وثيقة تأمينك من الرابط التالي {{site_url}}/api/v3/policy/{{Policy.policy_number|urlencode|replace('/','%2F')}}/coi/?last_name={{Hashed_last_name}} #تأمين الأجيال {% else %} Thank you for choosing SAICO Insurance, please click the link to download your policy. {{site_url}}/api/v3/policy/{{Policy.policy_number|urlencode|replace('/','%2F')}}/coi/?last_name={{Hashed_last_name}} #InsuringGenerations
-        </textarea>
-        <button onclick="copyToClipboard('#sampleJinjaMessage')" class="btn btn-secondary mt-2">Copy Jinja
-            Message</button>
-
-        <h3 class="mt-4">Sample Context Data:</h3>
-        <textarea id="sampleContextData" class="form-control" onclick="copyToClipboard('#sampleContextData')" readonly>
-            {
-                "Policy": {
-                    "customer": {"language": "en"},
-                    "policy_number": "POLICY/1234"
-                },
-                "site_url": "https://saicoinsurance.com",
-                "Hashed_last_name": "hashedvalue"
-            }
-        </textarea>
-        <button onclick="copyToClipboard('#sampleContextData')" class="btn btn-secondary mt-2">Copy Context
-            Data</button>
-
-        <h3 class="mt-4">Rendered Result:</h3>
-        <div id="result" class="alert alert-success" role="alert" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
@@ -63,8 +73,8 @@
 
         $('#renderForm').submit(function (event) {
             event.preventDefault(); // Prevent the default form submit action
-            var jinjaMessage = $('#jinjaMessage').val();
-            var contextData = $('#contextData').val();
+            var jinjaMessage = $('#jinjaMessage').val().trim();
+            var contextData = $('#contextData').val().trim();
 
             $.ajax({
                 url: 'https://api-jinja.muzammilpeer.uk/api/render/',
