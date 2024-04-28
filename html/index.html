@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jinja Message Renderer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Jinja Template Renderer</h2>
+        <form id="renderForm">
+            <div class="form-group">
+                <label for="jinjaMessage">Jinja Message:</label>
+                <input type="text" class="form-control" id="jinjaMessage" placeholder="Enter Jinja message">
+            </div>
+            <div class="form-group">
+                <label for="contextData">Context Data (JSON):</label>
+                <textarea class="form-control" id="contextData" rows="3" placeholder='{"key": "value"}'></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Render Message</button>
+        </form>
+        <h3 class="mt-4">Rendered Result:</h3>
+        <div id="result" class="alert alert-success" role="alert" style="display: none;"></div>
+    </div>
+
+
+    <script>
+        $('#renderForm').submit(function (event) {
+            event.preventDefault(); // Prevent the default form submit action
+            var jinjaMessage = $('#jinjaMessage').val();
+            var contextData = $('#contextData').val();
+
+            // Perform the AJAX POST request to the Django API
+            // Notice the URL points to the internal Kubernetes service and port
+            $.ajax({
+                url: 'https://api-jinja.muzammilpeer.uk/api/render/', // Adjusted for internal service access
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    jinja_message: jinjaMessage,
+                    context: JSON.parse(contextData)
+                }),
+                success: function (data) {
+                    $('#result').text(data.result).show();
+                },
+                error: function (xhr, status, error) {
+                    $('#result').text('Error: ' + error).show();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
